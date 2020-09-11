@@ -46,13 +46,15 @@ client.on('message', async msg => {
             case 'cek':
             case 'check':
                 const content = []
+                const fileName = moment(timestamp * 1000).format('HH-mm-ss') + '.txt'
                 await Promise.all(args.map(async (number) => {
                         const contactId = number + '@c.us'
                         const result = await client.isRegisteredUser(contactId)
                         console.log('Checking Number:', number, ' Result:', result)
                         return content.push(`${number}: ${result}`)
                     }))
-                    .then(() => client.sendMessage(from, `Retuls:\n${content.join('\n')}`))
+                    .then(() => client.sendMessage(from, `File Tersimpan: ${fileName}\nRetuls:\n${content.join('\n')}`))
+                    .then(() => fs.writeFileSync('result/'+fileName, content.join('\n')) )
                 break;
         }
     }
