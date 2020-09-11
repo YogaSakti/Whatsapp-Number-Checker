@@ -24,7 +24,7 @@ client.on('authenticated', (session) => {
     fs.writeFileSync('./session.json', JSON.stringify(session))
 })
 
-client.on('auth_failure', msg => console.error('AUTHENTICATION FAILURE'))
+client.on('auth_failure', () => console.error('AUTHENTICATION FAILURE'))
 
 client.on('ready', () => console.log('READY'))
 
