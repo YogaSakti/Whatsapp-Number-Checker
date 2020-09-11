@@ -7,7 +7,7 @@ let sessionCfg = fs.existsSync('./session.json') ? require('./session.json') : '
 
 const client = new Client({
     puppeteer: {
-        headless: true
+        headless: false
     },
     session: sessionCfg
 })
@@ -33,29 +33,29 @@ client.on('message', async msg => {
     // console.log('MESSAGE RECEIVED')
     let { mediaKey, id, ack, hasMedia, body, type, timestamp, from, to, author, isForwarded, broadcast, fromMe, hasQuotedMsg, location, mentionedIds} = msg
     const caption = type == 'image' ? body : ''
-
     const prefix = '$'
     body = (type === 'chat' && body.startsWith(prefix)) ? body : caption.startsWith(prefix) ? caption : ''
     const command = body.slice(1).trim().split(/s+|\n/).shift().toLowerCase()
     const isCmd = body.startsWith(prefix)
     const args = body.split('\n').slice(1)
-    if (isCmd) {
-        console.log('[EXEC]', moment(timestamp * 1000).format('DD/MM/YY HH:mm:ss'), `${command} [${args.length}]`, 'from', from.replace('@c.us', ''))
+    if (isCmd) console.log('[EXEC]', moment(timestamp * 1000).format('DD/MM/YY HH:mm:ss'), `${command} [${args.length}]`, 'from', from.replace('@c.us', ''))
 
-        switch (command) {
-            case 'cek':
-            case 'check':
-                const content = []
-                const fileName = moment(timestamp * 1000).format('HH-mm-ss') + '.txt'
-                await Promise.all(args.map(async (number) => {
-                        const contactId = number + '@c.us'
-                        const result = await client.isRegisteredUser(contactId)
-                        console.log('Checking Number:', number, ' Result:', result)
-                        return content.push(`${number}: ${result}`)
+    switch (command) {
+        case 'cek':
+        case 'check': {
+            const fileName = moment(timestamp * 1000).format('HH-mm-ss') + '.txt'
+            if (args.length >= 1500) return client.sendMessage(from, 'gileee, bro limit 1K per check yee')
+            await Promise.all(
+                    args.map((number, i) => {
+                        return setTimeout(async () => {
+                            const contactId = number + '@c.us'
+                            const result = await client.isRegisteredUser(contactId)
+                            console.log(`[${i}] Checking Number:`, number, 'Result:', result)
+                            fs.appendFileSync('result/' + fileName, `${number}: ${result}\n`)
+                        }, i * 100)
                     }))
-                    .then(() => client.sendMessage(from, `File Tersimpan: ${fileName}\nRetuls:\n${content.join('\n')}`))
-                    .then(() => fs.writeFileSync('result/'+fileName, content.join('\n')) )
-                break;
+                .then(() => client.sendMessage(from, `Memeriksa ${args.length} nomor...\nFile Tersimpan: ${fileName}`))
+            break
         }
     }
 })
