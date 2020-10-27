@@ -1,0 +1,49 @@
+</html>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>LIST</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/send_url.js"></script>
+</head>
+
+<body>
+    <div class="top-wrapper">
+        <div class="top-detail">
+            <center>
+                <h2>Whatsapp Checker v2.0</h2>
+                <form action="" method="POST">
+                    <div class="form-group purple-border">
+                        <textarea class="form-control" placeholder="Type your List Number Here" name="number" rows="5" cols="50"></textarea>
+                    </div>
+                    <button class="index-button" id="search" type="submit">Submit</button>
+                </form>
+            </center>
+            <%if(typeof error !== "undefined"){%>
+            <center><h2><%= error %></h2></center>
+            <% } else if(typeof result !== "undefined"){%>
+            <div class="index-table-wrapper">
+                <div class="table-head">
+                    <span class="id-column">Number</span>
+                    <span class="name-column">Value</span>
+                </div>
+                <ul class="table-body">
+                    <% for (var i = 0; i < result.length;  i++) { %>
+                    <li>
+                        <span class="id-column"><%= result[i].number %></span>
+                        <span class="name-column"><%= result[i].value %></span>
+                    </li>
+                    <% }%>
+                </ul>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</body>
+<footer>
+    <center>Made with 🧡 by yoga sakti</center>
+</footer>
+</html>
